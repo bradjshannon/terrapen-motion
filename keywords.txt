@@ -1,0 +1,103 @@
+# Arduino Keywords File for TerraPen Motion Control Library
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+StepperDriver	KEYWORD1
+ServoDriver	KEYWORD1
+RobotConfig	KEYWORD1
+Position	KEYWORD1
+TerraPenRobot	KEYWORD1
+CommandProcessor	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+# StepperDriver methods
+begin	KEYWORD2
+setSpeed	KEYWORD2
+getSpeed	KEYWORD2
+stepForward	KEYWORD2
+stepBackward	KEYWORD2
+stepNow	KEYWORD2
+isReady	KEYWORD2
+hold	KEYWORD2
+release	KEYWORD2
+isHolding	KEYWORD2
+getCurrentPhase	KEYWORD2
+isInitialized	KEYWORD2
+
+# ServoDriver methods
+setAngle	KEYWORD2
+sweepTo	KEYWORD2
+getCurrentAngle	KEYWORD2
+getTargetAngle	KEYWORD2
+isMoving	KEYWORD2
+getProgress	KEYWORD2
+stop	KEYWORD2
+update	KEYWORD2
+detach	KEYWORD2
+isAttached	KEYWORD2
+
+# Position methods
+distanceTo	KEYWORD2
+angleTo	KEYWORD2
+turnAngleTo	KEYWORD2
+offsetBy	KEYWORD2
+withAngle	KEYWORD2
+moveForward	KEYWORD2
+rotate	KEYWORD2
+equals	KEYWORD2
+sameLocation	KEYWORD2
+toString	KEYWORD2
+print	KEYWORD2
+getAngleDegrees	KEYWORD2
+setAngleDegrees	KEYWORD2
+isValid	KEYWORD2
+normalizeAngle	KEYWORD2
+fromPolar	KEYWORD2
+interpolate	KEYWORD2
+
+# RobotConfig methods
+isValid	KEYWORD2
+getStepsPerMM	KEYWORD2
+getMMPerStep	KEYWORD2
+isInWorkspace	KEYWORD2
+printConfig	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+# Pin assignments
+left_motor_pins	LITERAL1
+right_motor_pins	LITERAL1
+servo_pin	LITERAL1
+
+# Physical parameters
+wheel_diameter_mm	LITERAL1
+wheelbase_mm	LITERAL1
+steps_per_revolution	LITERAL1
+
+# Servo angles
+pen_up_angle	LITERAL1
+pen_down_angle	LITERAL1
+
+# Speed limits
+max_speed_mms	LITERAL1
+max_angular_speed_rad_s	LITERAL1
+default_speed_mms	LITERAL1
+default_draw_speed_mms	LITERAL1
+
+# Workspace limits
+min_x	LITERAL1
+max_x	LITERAL1
+min_y	LITERAL1
+max_y	LITERAL1
+
+# Position coordinates
+x	LITERAL1
+y	LITERAL1
+angle	LITERAL1
