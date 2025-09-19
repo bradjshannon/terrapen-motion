@@ -1,21 +1,20 @@
 #include "TerraPenRobot.h"
 
 /**
- * Initialize the robot with hardware configuration
+ * Initialize the robot with hardware configuration from global config
  */
-void TerraPenRobot::begin(const RobotConfig& config) {
-    robot_config = config;
+void TerraPenRobot::begin() {
+    // Initialize hardware drivers using global configuration
+    left_motor.begin(g_config.hardware.motor_l_pins[0], g_config.hardware.motor_l_pins[1], 
+                     g_config.hardware.motor_l_pins[2], g_config.hardware.motor_l_pins[3]);
+    right_motor.begin(g_config.hardware.motor_r_pins[0], g_config.hardware.motor_r_pins[1], 
+                      g_config.hardware.motor_r_pins[2], g_config.hardware.motor_r_pins[3]);
+    pen_servo.begin(g_config.hardware.servo_pin);
     
-    // Initialize hardware drivers
-    left_motor.begin(config.left_motor_pins[0], config.left_motor_pins[1], 
-                     config.left_motor_pins[2], config.left_motor_pins[3]);
-    right_motor.begin(config.right_motor_pins[0], config.right_motor_pins[1], 
-                      config.right_motor_pins[2], config.right_motor_pins[3]);
-    pen_servo.begin(config.servo_pin);
-    
-    // Set default motor speeds (can be adjusted later)
-    left_motor.setSpeed(50.0);  // steps per second
-    right_motor.setSpeed(50.0);
+    // Set motor speeds based on configuration
+    float speed_sps = 1000000.0 / g_config.hardware.step_delay_us;
+    left_motor.setSpeed(speed_sps);
+    right_motor.setSpeed(speed_sps);
     
     // Initialize state
     state = IDLE;
@@ -33,7 +32,7 @@ void TerraPenRobot::begin(const RobotConfig& config) {
     right_steps_total = 0;
     
     // Set pen to up position initially
-    pen_servo.setAngle(config.pen_up_angle);
+    pen_servo.setAngle(g_config.hardware.servo_pen_up_angle);
 }
 
 /**
@@ -116,7 +115,7 @@ bool TerraPenRobot::turnRight(int steps) {
  * Raise the pen
  */
 void TerraPenRobot::penUp() {
-    pen_servo.setAngle(robot_config.pen_up_angle);
+    pen_servo.setAngle(g_config.hardware.servo_pen_up_angle);
     pen_is_down = false;
 }
 
@@ -124,7 +123,7 @@ void TerraPenRobot::penUp() {
  * Lower the pen
  */
 void TerraPenRobot::penDown() {
-    pen_servo.setAngle(robot_config.pen_down_angle);
+    pen_servo.setAngle(g_config.hardware.servo_pen_down_angle);
     pen_is_down = true;
 }
 

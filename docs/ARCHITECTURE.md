@@ -1,9 +1,9 @@
-# TerraPen Motion Control Architecture (Revised)
+# TerraPen Motion Control Architecture
 
-**Version**: 2.1  
-**Date**: September 18, 2025  
+**Version**: 2.2  
+**Date**: September 19, 2025  
 **Project**: Differential drive drawing robot with Arduino Nano + ESP32 controller  
-**Current Status**: Phase 1.5 Complete ✅
+**Current Status**: Phase 1.5 Complete with Testing Framework ✅
 
 ## Implementation Status Summary
 
@@ -11,6 +11,8 @@
   - StepperDriver, ServoDriver, RobotConfig, Position
 - **Phase 1.5**: Robot Control Foundation ✅ COMPLETE  
   - TerraPenRobot class with state machine and step-based movement
+- **Phase 1.6**: Testing & Quality Framework ✅ COMPLETE
+  - Unit testing, POST, error handling, performance monitoring, NVRAM logging
 - **Phase 2**: Coordinate System 🔴 NEXT
   - Kinematics, moveTo(x,y), position tracking
 - **Phase 3**: Communication Layer 🔴 FUTURE
@@ -20,13 +22,20 @@
 
 ## System Overview
 
-The TerraPen system uses a **simplified 3-layer architecture** focused on real-world effectiveness:
+The TerraPen system uses a **layered architecture** with comprehensive testing and quality assurance:
 
+### Core Layers
 - **L1 (Hardware)**: Direct motor/servo control with timing
 - **L2 (Robot)**: Kinematics, movement primitives, and robot state
 - **L3 (Communication)**: ESP32↔Nano protocol and command processing
 
-**Design Philosophy**: Simple, robust, and aligned with standard embedded/robotics practices.
+### Quality & Operations Layers
+- **Testing Framework**: Unit tests, POST validation, test automation
+- **Error Management**: Structured error codes, reporting, recovery
+- **Performance Monitoring**: Real-time metrics, NVRAM logging, ESP32 upload
+- **Configuration Management**: Centralized settings, validation, defaults
+
+**Design Philosophy**: Simple, robust, testable, and aligned with embedded/robotics practices.
 
 ## Communication Architecture
 
@@ -34,21 +43,73 @@ The TerraPen system uses a **simplified 3-layer architecture** focused on real-w
 Studio (Python) ←─WiFi─→ ESP32 Controller ←─UART─→ Arduino Nano ←─pins─→ Hardware
      ↑                        ↑                      ↑
  Path Planning          Command Queuing        Motion Execution
- Visualization          Multi-robot Coord      Hardware Control
+ Visualization          Multi-robot Coord      Hardware Control  
  Simulation             Trajectory Planning    Real-time Control
+                               ↑                      ↑
+                        Performance Upload    NVRAM Data Storage
+                        Error Reporting       Testing Framework
 ```
 
-## Communication Protocol
+## New Testing & Quality Architecture
 
-### Message Format (JSON over Serial)
-```json
-// Command from ESP32 to Nano
-{
-  "id": 123,
-  "cmd": "MOVE_TO",
-  "x": 50.5,
-  "y": 30.2,
-  "speed": 15.0,
+### Testing Framework Structure
+```
+src/testing/
+├── TestFramework.h/cpp     # Core unit testing framework
+├── PowerOnSelfTest.h       # Runtime validation system  
+└── PerformanceMonitor.h/cpp # Real-time performance metrics
+
+test/
+├── test_stepper_driver.cpp # Hardware driver tests
+├── test_servo_driver.cpp   # Servo control tests
+└── test_terrapen_robot.cpp # Robot integration tests
+
+examples/TestRunner/        # Interactive test execution
+```
+
+### Error Management System
+```
+ErrorSystem.h/cpp:
+├── 60+ specific error codes
+├── Context tracking (file, line, function)
+├── Error history and statistics
+└── Integration with all components
+```
+
+### Performance & Storage System
+```
+Storage Architecture:
+├── NVRAMManager: Circular buffer, wear leveling
+├── ESP32Uploader: Reliable data transmission
+├── PerformanceMonitor: Real-time metrics
+└── Configuration: Centralized settings
+
+EEPROM Layout (1024 bytes):
+├── Header (16 bytes): Format validation, metadata
+├── Data Buffer (752 bytes): Performance records
+└── Reserved (256 bytes): Future expansion
+```
+
+## Configuration Architecture
+
+### Centralized Configuration (TerraPenConfig.h)
+```cpp
+struct TerraPenConfig {
+    HardwareConfig hardware;        // Pins, timing, physical params
+    TestingConfig testing;          // POST, unit tests, automation
+    PerformanceConfig performance;  // Monitoring, thresholds
+    CommunicationConfig communication; // ESP32, serial, protocols
+    StorageConfig storage;          // NVRAM, retention, cleanup
+    ErrorConfig error_handling;     // Logging, recovery, thresholds
+};
+```
+
+### Configuration Features
+- **Single Source of Truth**: All settings in one place
+- **Validation**: Pin conflicts, range checking, logical consistency
+- **Build-time Overrides**: Compiler flags for different builds
+- **Runtime Accessibility**: All components use g_config
+- **Backward Compatibility**: RobotConfig wrapper maintained
   "pen": false
 }
 

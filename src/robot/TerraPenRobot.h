@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include "../hardware/StepperDriver.h"
 #include "../hardware/ServoDriver.h"
-#include "../RobotConfig.h"
+#include "../TerraPenConfig.h"
 
 /**
  * Robot state enumeration for state machine
@@ -52,12 +52,9 @@ private:
     long left_steps_total;
     long right_steps_total;
     
-    // Robot configuration
-    RobotConfig robot_config;
-    
 public:
     // === INITIALIZATION ===
-    void begin(const RobotConfig& config);
+    void begin();  // Uses g_config.hardware
     
     // === DIRECT HARDWARE CONTROL (Step-based, no coordinates) ===
     bool moveForward(int steps);     // Returns false if busy

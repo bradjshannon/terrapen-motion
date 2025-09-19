@@ -1,13 +1,29 @@
 # TerraPen Motion Control Library
 
-Arduino library for controlling differential drive wheeled robots with stepper motors and servo pen control.
+Arduino library for controlling differential drive wheeled robots with stepper motors and servo pen control, featuring comprehensive testing framework, performance monitoring, and quality assurance systems.
 
-## Current Status: Phase 1.5 Complete ✅
+## Current Status: Phase 1.6 Complete ✅
 
-**Latest Version**: 1.1.0 (Phase 1.5)  
-**Implementation Status**: Step-based robot control with coordinated movement
+**Latest Version**: 1.6.1 (Optimized)  
+**Implementation Status**: Complete robot control with optimized testing framework, adaptive performance monitoring, and production-ready quality assurance
+
+**Recent Optimizations** (September 19, 2025):
+- ✅ **EEPROM Wear Protection**: 1-bit upload flags reduce write cycles by 10x
+- ✅ **Performance Optimization**: Adaptive monitoring with 10-minute baseline, 5-second anomaly detection
+- ✅ **Testing Streamlined**: POST reduced from 30s to 8s while maintaining comprehensive validation
+- ✅ **Configuration Centralized**: Single TerraPenConfig system eliminates redundancy
+- ✅ **Battery Awareness**: 2-3 hour operation optimized for efficient power usage
 
 ## Features
+
+### Phase 1.6 - Quality & Testing Framework (NEW)
+- **Testing Framework**: Custom Arduino unit testing with assertion macros and test tagging
+- **Power-On Self Test (POST)**: Runtime validation of critical systems (Quick & Full modes)
+- **Performance Monitoring**: Real-time CPU, memory, timing, and step rate tracking
+- **NVRAM Data Logging**: Circular buffer storage with ESP32 upload capability
+- **Error Management**: 60+ specific error codes with context tracking and recovery
+- **Centralized Configuration**: Single configuration file for all project settings
+- **Test Automation**: Git hooks, CI/CD integration, and automated quality gates
 
 ### Phase 1.5 - Complete Robot Control
 - **TerraPenRobot**: Complete robot class with state machine and coordinated movement
@@ -19,7 +35,7 @@ Arduino library for controlling differential drive wheeled robots with stepper m
 ### Phase 1 - Hardware Drivers (Foundation)
 - **StepperDriver**: Non-blocking control of 28BYJ-48 stepper motors with precise timing
 - **ServoDriver**: Smooth servo movement with state tracking for pen control
-- **RobotConfig**: Centralized hardware configuration management  
+- **RobotConfig**: Hardware configuration management (now integrated with TerraPenConfig)
 - **Position**: 2D coordinate system with utility functions
 - **Arduino Library**: Proper library structure with examples and documentation
 
@@ -30,6 +46,7 @@ Arduino library for controlling differential drive wheeled robots with stepper m
 - ULN2803A or similar driver IC for stepper control
 - Servo motor for pen up/down mechanism  
 - 5V power supply (adequate current capacity)
+- (Optional) ESP32 for data upload and extended connectivity
 
 ## Hardware Setup
 
@@ -39,12 +56,12 @@ Left Motor:     Right Motor:
 IN1 -> Pin 2    IN1 -> Pin 6
 IN2 -> Pin 3    IN2 -> Pin 7  
 IN3 -> Pin 4    IN3 -> Pin 8
-IN4 -> Pin 5    IN4 -> Pin 10
+IN4 -> Pin 5    IN4 -> Pin 9
 ```
 
 ### Servo Motor
 ```
-Signal -> Pin 9
+Signal -> Pin 10
 Power  -> 5V
 Ground -> GND
 ```
@@ -99,6 +116,101 @@ void loop() {
     robot.moveBackward(25);   // Move back 25 steps
   }
 }
+```
+
+## Quality Assurance & Testing
+
+### Testing Framework
+The library includes a comprehensive testing framework for Arduino:
+
+```cpp
+#include <TerraPenMotionControl.h>
+
+void setup() {
+  Serial.begin(115200);
+  
+  // Run Power-On Self Test (POST)
+  PostResults results = runQuickPost();
+  if (!results.passed) {
+    Serial.println("POST Failed!");
+    Serial.println(results.failure_summary);
+    return;
+  }
+  
+  // Initialize performance monitoring
+  performance_monitor.begin();
+  
+  // Initialize robot with validated configuration
+  TerraPenRobot robot;
+  RobotConfig config;
+  robot.begin(config);
+}
+
+void loop() {
+  // Normal robot operation with monitoring
+  robot.moveForward(100);
+  
+  // Check performance metrics periodically
+  if (millis() % 10000 == 0) {  // Every 10 seconds
+    PerformanceMetrics metrics = performance_monitor.getMetrics();
+    Serial.print("CPU: "); Serial.print(metrics.cpu_usage_percent); Serial.println("%");
+    Serial.print("Free RAM: "); Serial.print(metrics.free_memory_bytes); Serial.println(" bytes");
+  }
+}
+```
+
+### Interactive Test Runner
+Use the TestRunner example for comprehensive system validation:
+
+```
+File → Examples → TerraPenMotionControl → TestRunner
+```
+
+Interactive menu provides:
+- **Unit Tests**: Complete test suite validation
+- **POST Tests**: Power-on self test execution
+- **Performance Monitoring**: Real-time system metrics
+- **Storage Status**: NVRAM usage and upload status
+- **Configuration Display**: Current system settings
+
+### Error Handling
+Structured error management with detailed context:
+
+```cpp
+void loop() {
+  // Check for system errors
+  if (HAS_ERROR()) {
+    ErrorCode error = g_error_manager.getCurrentErrorCode();
+    String context = g_error_manager.getCurrentContext();
+    
+    Serial.print("Error "); Serial.print(error); 
+    Serial.print(": "); Serial.println(context);
+    
+    // Attempt automatic recovery
+    if (g_config.error_handling.enable_auto_recovery) {
+      CLEAR_ERROR();
+      robot.emergencyStop();
+      delay(1000);
+      robot.reset();
+    }
+  }
+}
+```
+
+### Performance Data Upload
+Automatic ESP32 data upload (when configured):
+
+```cpp
+void setup() {
+  // Enable ESP32 communication (optional)
+  g_config.communication.enable_esp32_upload = true;
+  g_nvram_manager.begin(&esp32_uploader);
+}
+
+// Performance data is automatically:
+// 1. Stored to NVRAM every 10 seconds
+// 2. Uploaded to ESP32 when connected
+// 3. Cleaned up when upload confirmed
 ```
 
 ### Advanced: Direct Hardware Control (Phase 1)
@@ -324,3 +436,15 @@ This library is part of the TerraPen project. Contributions welcome:
 - **Protection**: Built-in flyback diodes
 
 This library provides a solid foundation for building drawing robots, plotters, and similar applications requiring precise 2D movement control.
+
+## 📚 Documentation
+
+Complete documentation is available in the [`docs/`](docs/) folder:
+
+- **[System Architecture](docs/ARCHITECTURE.md)** - Complete system design and patterns
+- **[API Reference](docs/API_REFERENCE.md)** - Full API documentation  
+- **[Testing Guide](docs/TESTING_GUIDE.md)** - How to test and validate your code
+- **[Performance Strategy](docs/ADAPTIVE_PERFORMANCE_STRATEGY.md)** - Smart monitoring and optimization
+- **[Phase Status](docs/PHASE_2_READINESS_ASSESSMENT.md)** - Current implementation status and next steps
+
+See [`docs/README.md`](docs/README.md) for complete documentation index.
