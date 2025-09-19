@@ -1,11 +1,11 @@
 # TerraPen Motion Control API Reference
 
-**Version**: 1.6.0  
+**Version**: 2.0.0  
 **Date**: September 19, 2025
 
 ## Overview
 
-Complete API reference for the TerraPen Motion Control library, including all classes, functions, configuration options, and testing framework components.
+Complete API reference for the TerraPen Motion Control library, including all classes, functions, configuration options, and testing framework components. Now includes Phase 2 coordinate-based movement system with differential drive kinematics.
 
 ## Core Classes
 
@@ -19,11 +19,25 @@ TerraPenRobot();
 
 #### Initialization
 ```cpp
-bool begin(const RobotConfig& config);
+bool begin();  // Uses g_config.hardware
 void reset();
 ```
 
-#### Movement Commands
+#### Coordinate-Based Movement (Phase 2)
+```cpp
+bool moveTo(float x, float y, float speed_mms = 15.0);     // Move to coordinates with pen up
+bool drawTo(float x, float y, float speed_mms = 10.0);     // Draw line to coordinates with pen down
+bool moveBy(float dx, float dy, float speed_mms = 15.0);   // Move relative to current position
+bool drawBy(float dx, float dy, float speed_mms = 10.0);   // Draw relative to current position
+```
+
+#### Rotation Control (Phase 2)
+```cpp
+bool turnTo(float angle_radians, float speed_rad_s = 0.5); // Turn to absolute angle
+bool turnBy(float delta_angle, float speed_rad_s = 0.5);   // Turn by relative angle
+```
+
+#### Step-Based Movement (Phase 1.5)
 ```cpp
 bool moveForward(int steps);
 bool moveBackward(int steps); 
@@ -45,6 +59,14 @@ RobotState getState();
 bool isBusy();
 bool isMoving();
 bool hasError();
+```
+
+#### Position Tracking (Phase 2)
+```cpp
+Position getCurrentPosition();               // Get current position and orientation
+void resetPosition(float x = 0, float y = 0, float angle = 0); // Reset position tracking
+bool isAtTarget();                          // Check if at target position
+bool isValidPosition(float x, float y);     // Check workspace boundaries
 ```
 
 #### Update Loop
@@ -421,43 +443,171 @@ enum UploadStatus : uint8_t {
 
 ## Example Usage Patterns
 
-### Complete Robot Setup
+## Example Usage Patterns
+
+### Phase 2 Coordinate-Based Movement (Recommended)
 ```cpp
 #include <TerraPenMotionControl.h>
+
+TerraPenRobot robot;
 
 void setup() {
     Serial.begin(115200);
     
-    // Configure system
-    g_config.testing.enable_post_on_startup = true;
-    g_config.performance.enable_cpu_monitoring = true;
-    g_config.storage.enable_nvram_logging = true;
+    // Initialize robot with global config
+    robot.begin();
     
-    // Run POST
-    PostResults post = runQuickPost();
-    if (!post.passed) {
-        Serial.println("POST failed - halting");
-        while(1);
-    }
+    // Set starting position (optional calibration)
+    robot.resetPosition(0, 0, 0);
     
-    // Initialize components
-    performance_monitor.begin();
-    g_nvram_manager.begin();
-    
-    // Initialize robot
-    TerraPenRobot robot;
-    RobotConfig config;
-    robot.begin(config);
-    
-    Serial.println("System ready");
+    Serial.println("Robot ready for coordinate movement");
 }
 
 void loop() {
-    robot.update();
-    performance_monitor.update();
-    g_nvram_manager.performMaintenance();
+    robot.update();  // Always call this
     
-    // Robot operations...
+    if (!robot.isBusy()) {
+        // Draw a simple square (20mm x 20mm)
+        robot.moveTo(0, 0);       // Move to start (pen up automatically)
+        robot.drawTo(20, 0);      // Draw right side (pen down automatically)
+        robot.drawTo(20, 20);     // Draw top side
+        robot.drawTo(0, 20);      // Draw left side
+        robot.drawTo(0, 0);       // Draw bottom side
+        
+        // Move to new location and draw circle approximation
+        robot.moveTo(40, 40);     // Move pen up to new location
+        drawCircle(40, 40, 10);   // Draw 10mm radius circle
+        
+        // Print current position
+        Position pos = robot.getCurrentPosition();
+        Serial.print("Current position: ");
+        pos.print();
+        
+        delay(5000);  // Wait before repeating
+    }
+}
+
+void drawCircle(float center_x, float center_y, float radius) {
+    const int segments = 12;  // 12-sided polygon approximation
+    
+    // Move to start point on circle
+    robot.moveTo(center_x + radius, center_y);
+    robot.penDown();
+    
+    // Draw circle segments
+    for (int i = 1; i <= segments; i++) {
+        float angle = (2 * PI * i) / segments;
+        float x = center_x + radius * cos(angle);
+        float y = center_y + radius * sin(angle);
+        robot.drawTo(x, y);
+    }
+    
+    robot.penUp();
+}
+```
+
+### Phase 1.5 Step-Based Movement (Legacy Support)
+```cpp
+#include <TerraPenMotionControl.h>
+
+TerraPenRobot robot;
+
+void setup() {
+    robot.begin();
+}
+
+void loop() {
+    robot.update();  // Always call this
+    
+    if (!robot.isBusy()) {
+        // Step-based movement (no coordinates)
+        robot.moveForward(50);    // Move 50 steps forward
+        robot.penDown();          // Lower pen
+        robot.turnLeft(25);       // Turn left 25 steps
+        robot.penUp();            // Raise pen
+        
+        delay(2000);
+    }
+}
+```
+
+### Coordinate System Conventions
+The TerraPen coordinate system follows robotics conventions:
+- **Origin (0,0)**: Robot's starting position (call `resetPosition()` to set)
+- **X-axis**: Positive right, negative left (robot's perspective)
+- **Y-axis**: Positive forward, negative backward (robot's perspective)  
+- **Angle**: 0 = facing positive Y, positive rotation = counterclockwise
+- **Units**: All distances in millimeters, angles in radians
+- **Speed**: Linear speed in mm/s, angular speed in rad/s
+
+### Workspace Boundaries
+The robot automatically validates all coordinate movements against configured workspace boundaries:
+```cpp
+// Default workspace (configurable in g_config.hardware)
+// X: -100mm to +100mm
+// Y: -100mm to +100mm
+
+bool valid = robot.isValidPosition(50, 75);    // Returns true - within bounds
+bool invalid = robot.isValidPosition(150, 0);  // Returns false - outside bounds
+
+// Attempting invalid movement will return false
+bool success = robot.moveTo(150, 0);  // Returns false, robot doesn't move
+```
+
+### Error Handling Pattern
+```cpp
+void performRobotTask() {
+    if (HAS_ERROR()) {
+        Serial.println("Cannot perform task - system has error");
+        return;
+    }
+    
+    if (robot.isBusy()) {
+        return;  // Try again later
+    }
+    
+    // Validate target position
+    if (!robot.isValidPosition(target_x, target_y)) {
+        REPORT_ERROR(ERR_INVALID_POSITION, "performRobotTask", "Target outside workspace");
+        return;
+    }
+    
+    if (!robot.moveTo(target_x, target_y)) {
+        REPORT_ERROR(ERR_MOVEMENT_FAILED, "performRobotTask", "Movement command failed");
+        return;
+    }
+    
+    // Task completed successfully
+}
+```
+
+### Position Tracking and Accuracy
+```cpp
+void monitorPositionAccuracy() {
+    // Get current estimated position
+    Position current = robot.getCurrentPosition();
+    
+    // Move to known position
+    robot.moveTo(50, 50);
+    
+    // Wait for completion
+    while (robot.isBusy()) {
+        robot.update();
+        delay(10);
+    }
+    
+    // Check final position
+    Position final = robot.getCurrentPosition();
+    float error = final.distanceTo(Position(50, 50));
+    
+    Serial.print("Position error: ");
+    Serial.print(error, 2);
+    Serial.println(" mm");
+    
+    if (error > 2.0) {
+        Serial.println("Warning: Position accuracy degraded - consider recalibration");
+        robot.resetPosition(50, 50, final.angle);  // Manual correction
+    }
 }
 ```
 

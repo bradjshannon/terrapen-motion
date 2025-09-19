@@ -5,6 +5,7 @@
 #include "../hardware/StepperDriver.h"
 #include "../hardware/ServoDriver.h"
 #include "../TerraPenConfig.h"
+#include "../Position.h"
 
 /**
  * Robot state enumeration for state machine
@@ -41,6 +42,11 @@ private:
     RobotState state;
     bool pen_is_down;
     
+    // Position tracking (Phase 2)
+    float current_x;           // Current X position in mm
+    float current_y;           // Current Y position in mm  
+    float current_angle;       // Current orientation in radians
+    
     // Movement coordination state
     int target_left_steps;
     int target_right_steps;
@@ -48,13 +54,29 @@ private:
     int current_right_steps;
     bool movement_active;
     
-    // Step counting for future position tracking (Phase 2)
+    // Coordinate movement state (Phase 2)
+    float target_x;           // Target X position for coordinate moves
+    float target_y;           // Target Y position for coordinate moves
+    bool coordinate_movement; // True if executing coordinate-based movement
+    float movement_speed_mms; // Movement speed in mm/s
+    
+    // Step counting for position tracking
     long left_steps_total;
     long right_steps_total;
     
 public:
     // === INITIALIZATION ===
     void begin();  // Uses g_config.hardware
+    
+    // === COORDINATE-BASED MOVEMENT (Phase 2) ===
+    bool moveTo(float x, float y, float speed_mms = 15.0);     // Move to coordinates with pen up
+    bool drawTo(float x, float y, float speed_mms = 10.0);     // Draw line to coordinates with pen down
+    bool moveBy(float dx, float dy, float speed_mms = 15.0);   // Move relative to current position
+    bool drawBy(float dx, float dy, float speed_mms = 10.0);   // Draw relative to current position
+    
+    // === ROTATION CONTROL (Phase 2) ===
+    bool turnTo(float angle_radians, float speed_rad_s = 0.5); // Turn to absolute angle
+    bool turnBy(float delta_angle, float speed_rad_s = 0.5);   // Turn by relative angle
     
     // === DIRECT HARDWARE CONTROL (Step-based, no coordinates) ===
     bool moveForward(int steps);     // Returns false if busy
@@ -73,6 +95,14 @@ public:
     void emergencyStop();
     void clearError();
     
+    // === POSITION TRACKING (Phase 2) ===
+    Position getCurrentPosition() const;    // Get current position and orientation
+    void resetPosition(float x = 0, float y = 0, float angle = 0); // Reset position tracking
+    bool isAtTarget() const;                // Check if at target position
+    
+    // === WORKSPACE SAFETY (Phase 2) ===
+    bool isValidPosition(float x, float y) const; // Check workspace boundaries
+    
     // === STEP TRACKING (for Phase 2) ===
     long getLeftStepsTotal() const;
     long getRightStepsTotal() const;
@@ -85,8 +115,15 @@ private:
     // === INTERNAL METHODS ===
     void executeMovement();          // Coordinate stepForward/stepBackward calls
     void setState(RobotState new_state);
-    bool isMovementComplete();
+    bool isMovementComplete() const;
     void stopAllMotors();
+    
+    // === KINEMATICS CALCULATIONS (Phase 2) ===
+    void calculateSteps(float distance_mm, float angle_diff, int& left_steps, int& right_steps);
+    void stepsToMovement(int left_steps, int right_steps, float& distance, float& angle_change);
+    void updatePositionEstimate();   // Update position based on step counts
+    void executeCoordinateMovement(); // Execute coordinate-based movement
+    bool isAtTargetPosition() const;       // Check if at target coordinates
 };
 
 #endif // TERRAPEN_ROBOT_H

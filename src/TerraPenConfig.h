@@ -53,6 +53,12 @@ struct HardwareConfig {
     uint16_t emergency_stop_timeout_ms = 100;    // Max time for emergency stop response
     uint16_t movement_timeout_ms = 30000;        // Max time for any single movement
     
+    // === WORKSPACE BOUNDARIES (Phase 2) ===
+    float workspace_min_x = -100.0f;            // Minimum X coordinate in mm
+    float workspace_max_x = 100.0f;             // Maximum X coordinate in mm
+    float workspace_min_y = -100.0f;            // Minimum Y coordinate in mm
+    float workspace_max_y = 100.0f;             // Maximum Y coordinate in mm
+    
     // === POWER MANAGEMENT ===
     uint8_t motor_hold_current_percent = 30;     // Holding current as % of full
     uint16_t motor_sleep_timeout_ms = 5000;      // Time before motors sleep
@@ -150,10 +156,10 @@ struct StorageConfig {
     // === DATA RETENTION (OPTIMIZED FOR 24+ HOUR COVERAGE) ===
     uint32_t data_retention_hours = 24;          // Keep data for 24 hours (realistic for robot)
     bool auto_cleanup_uploaded = true;           // Auto-delete confirmed uploads
-    uint16_t cleanup_interval_ms = 600000;       // Cleanup every 10 minutes (was 5)
+    uint32_t cleanup_interval_ms = 600000;       // Cleanup every 10 minutes (was 5)
     
     // === STORAGE STRATEGY (OPTIMIZED) ===
-    uint16_t storage_interval_ms = 1800000;      // Store every 30 minutes (was 60s)
+    uint32_t storage_interval_ms = 1800000;      // Store every 30 minutes (was 60s)
     bool adaptive_storage = true;                // Store more frequently during errors
     bool compress_data = true;                   // Use compressed format when possible
     uint8_t error_boost_factor = 6;              // Store 6x more often during errors (every 5 min)
@@ -162,10 +168,9 @@ struct StorageConfig {
     uint8_t upload_batch_size = 5;               // Upload 5 records at once (was 10)
     bool prioritize_error_records = true;        // Upload error records first
     uint16_t upload_window_hours = 2;            // Try to upload within 2 hours
-}
     
     // === WEAR LEVELING ===
-    uint16_t max_write_cycles = 90000;           // Conservative EEPROM limit
+    uint32_t max_write_cycles = 90000;           // Conservative EEPROM limit
     bool enable_wear_monitoring = true;          // Monitor EEPROM wear
     uint8_t wear_warning_percent = 80;           // Wear level warning threshold
 };

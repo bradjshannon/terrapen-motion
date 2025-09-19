@@ -59,13 +59,11 @@ void TerraPenConfig::printConfiguration() {
     
     // Performance configuration
     Serial.println("--- Performance Configuration ---");
-    Serial.print("Sample interval: "); Serial.print(performance.sample_interval_ms); Serial.println(" ms");
+    Serial.print("Baseline interval: "); Serial.print(performance.baseline_interval_ms); Serial.println(" ms");
     Serial.print("Storage interval: "); Serial.print(performance.storage_interval_ms); Serial.println(" ms");
-    Serial.print("CPU monitoring: "); Serial.println(performance.enable_cpu_monitoring ? "YES" : "NO");
-    Serial.print("CPU thresholds: "); Serial.print(performance.cpu_warning_threshold);
-    Serial.print("% / "); Serial.print(performance.cpu_critical_threshold); Serial.println("%");
-    Serial.print("Memory thresholds: "); Serial.print(performance.memory_warning_bytes);
-    Serial.print(" / "); Serial.print(performance.memory_critical_bytes); Serial.println(" bytes");
+    Serial.print("Anomaly interval: "); Serial.print(performance.anomaly_interval_ms); Serial.println(" ms");
+    Serial.print("CPU anomaly threshold: "); Serial.print(performance.cpu_anomaly_percent); Serial.println("%");
+    Serial.print("Timing anomaly threshold: "); Serial.print(performance.timing_anomaly_us); Serial.println(" us");
     Serial.println();
     
     // Communication configuration
@@ -127,10 +125,10 @@ bool TerraPenConfig::validateConfiguration() {
     }
     
     // Validate performance thresholds
-    if (!VALIDATE_PERCENTAGE(performance.cpu_warning_threshold) ||
-        !VALIDATE_PERCENTAGE(performance.cpu_critical_threshold) ||
-        performance.cpu_warning_threshold >= performance.cpu_critical_threshold) {
-        Serial.println("ERROR: Invalid CPU threshold configuration");
+    if (!VALIDATE_PERCENTAGE(performance.cpu_anomaly_percent) ||
+        performance.timing_anomaly_us == 0 ||
+        performance.frequency_anomaly_hz == 0) {
+        Serial.println("ERROR: Invalid performance threshold configuration");
         valid = false;
     }
     

@@ -1,22 +1,31 @@
 # TerraPen Motion Control Library
 
-Arduino library for controlling differential drive wheeled robots with stepper motors and servo pen control, featuring comprehensive testing framework, performance monitoring, and quality assurance systems.
+Arduino library for controlling differential drive wheeled robots with stepper motors and servo pen control, featuring coordinate-based movement, comprehensive testing framework, performance monitoring, and quality assurance systems.
 
-## Current Status: Phase 1.6 Complete ✅
+## Current Status: Phase 2 Complete ✅
 
-**Latest Version**: 1.6.1 (Optimized)  
-**Implementation Status**: Complete robot control with optimized testing framework, adaptive performance monitoring, and production-ready quality assurance
+**Latest Version**: 2.0.0  
+**Implementation Status**: Complete coordinate-based robot control with differential drive kinematics, position tracking, and workspace boundaries
 
-**Recent Optimizations** (September 19, 2025):
-- ✅ **EEPROM Wear Protection**: 1-bit upload flags reduce write cycles by 10x
-- ✅ **Performance Optimization**: Adaptive monitoring with 10-minute baseline, 5-second anomaly detection
-- ✅ **Testing Streamlined**: POST reduced from 30s to 8s while maintaining comprehensive validation
-- ✅ **Configuration Centralized**: Single TerraPenConfig system eliminates redundancy
-- ✅ **Battery Awareness**: 2-3 hour operation optimized for efficient power usage
+**Phase 2 Implementation** (September 19, 2025):
+- ✅ **Coordinate Movement**: `moveTo(x,y)`, `drawTo(x,y)` with automatic pen control
+- ✅ **Differential Drive Kinematics**: Forward/inverse kinematics calculations for precise movement
+- ✅ **Position Tracking**: Real-time position estimation based on step counts
+- ✅ **Rotation Control**: `turnTo(angle)`, `turnBy(delta)` for precise angular positioning
+- ✅ **Workspace Boundaries**: Automatic validation of movement commands within safe area
+- ✅ **Integration Testing**: Comprehensive validation with existing quality framework
 
 ## Features
 
-### Phase 1.6 - Quality & Testing Framework (NEW)
+### Phase 2 - Coordinate-Based Movement (NEW)
+- **Coordinate System**: Full 2D coordinate support with `moveTo(x,y)` and `drawTo(x,y)` methods
+- **Differential Drive Kinematics**: Precise forward/inverse kinematics for accurate movement
+- **Position Tracking**: Real-time position estimation based on wheel encoder step counts
+- **Rotation Control**: `turnTo()` and `turnBy()` methods for precise angular positioning
+- **Workspace Boundaries**: Automatic validation prevents movement outside safe operating area
+- **Automatic Pen Control**: Movement commands automatically handle pen up/down states
+
+### Phase 1.6 - Quality & Testing Framework
 - **Testing Framework**: Custom Arduino unit testing with assertion macros and test tagging
 - **Power-On Self Test (POST)**: Runtime validation of critical systems (Quick & Full modes)
 - **Performance Monitoring**: Real-time CPU, memory, timing, and step rate tracking
@@ -35,7 +44,7 @@ Arduino library for controlling differential drive wheeled robots with stepper m
 ### Phase 1 - Hardware Drivers (Foundation)
 - **StepperDriver**: Non-blocking control of 28BYJ-48 stepper motors with precise timing
 - **ServoDriver**: Smooth servo movement with state tracking for pen control
-- **RobotConfig**: Hardware configuration management (now integrated with TerraPenConfig)
+- **TerraPenConfig**: Hardware configuration management with comprehensive settings
 - **Position**: 2D coordinate system with utility functions
 - **Arduino Library**: Proper library structure with examples and documentation
 
@@ -83,21 +92,23 @@ Ground -> GND
 
 ## Basic Usage
 
-### Recommended: Phase 1.5 Robot Control
+### Recommended: Phase 2 Coordinate-Based Movement
 
 ```cpp
 #include <TerraPenMotionControl.h>
 
 TerraPenRobot robot;
-RobotConfig config;
 
 void setup() {
   Serial.begin(115200);
   
-  // Initialize robot with default configuration
-  robot.begin(config);
+  // Initialize robot with global configuration  
+  robot.begin();
   
-  Serial.println("Robot ready!");
+  // Set starting position (coordinate system origin)
+  robot.resetPosition(0, 0, 0);  // x=0, y=0, angle=0
+  
+  Serial.println("Robot ready for coordinate movement!");
 }
 
 void loop() {
@@ -106,8 +117,48 @@ void loop() {
   
   // Execute movements when robot is not busy
   if (!robot.isBusy()) {
+    // Draw a 20mm x 20mm square
+    robot.moveTo(0, 0);       // Move to start (pen automatically up)
+    robot.drawTo(20, 0);      // Draw right side (pen automatically down)
+    robot.drawTo(20, 20);     // Draw top side
+    robot.drawTo(0, 20);      // Draw left side  
+    robot.drawTo(0, 0);       // Complete square
+    
+    // Move to new location and draw triangle
+    robot.moveTo(30, 30);     // Move to new position (pen up)
+    robot.drawTo(45, 30);     // Base of triangle (pen down)
+    robot.drawTo(37.5, 43);   // Peak of triangle
+    robot.drawTo(30, 30);     // Close triangle
+    
+    // Print current position
+    Position pos = robot.getCurrentPosition();
+    Serial.print("Current position: ");
+    pos.print();  // Prints: "Position: (30.00, 30.00) @ 0.0°"
+    
+    delay(3000);  // Pause before repeating
+  }
+}
+```
+
+### Alternative: Phase 1.5 Step-Based Movement
+
+```cpp
+#include <TerraPenMotionControl.h>
+
+TerraPenRobot robot;
+
+void setup() {
+  Serial.begin(115200);
+  robot.begin();
+  Serial.println("Robot ready!");
+}
+
+void loop() {
+  robot.update();
+  
+  if (!robot.isBusy()) {
     robot.moveForward(50);    // Move 50 steps forward
-    delay(1000);              // Pause between commands
+    delay(1000);              
     
     robot.penDown();          // Lower pen
     robot.turnLeft(25);       // Turn left 25 steps  
@@ -142,8 +193,7 @@ void setup() {
   
   // Initialize robot with validated configuration
   TerraPenRobot robot;
-  RobotConfig config;
-  robot.begin(config);
+  robot.begin();
 }
 
 void loop() {
@@ -224,7 +274,7 @@ StepperDriver right_motor;
 ServoDriver pen_servo;
 
 // Use default configuration
-RobotConfig config;
+TerraPenConfig config;
 
 void setup() {
   Serial.begin(115200);
@@ -271,7 +321,7 @@ Open examples via `File > Examples > TerraPen Motion Control` in Arduino IDE.
 ### TerraPenRobot Class (Phase 1.5 - Recommended)
 
 ```cpp
-void begin(const RobotConfig& config);           // Initialize robot with configuration
+void begin();                                    // Initialize robot with global configuration
 
 // Step-based movement commands (non-blocking)
 bool moveForward(int steps);                     // Move both motors forward
@@ -322,7 +372,7 @@ bool isMoving();                                    // Check if moving
 void update();                                      // Process smooth movement (call in loop)
 ```
 
-### RobotConfig Struct
+### TerraPenConfig Struct
 
 ```cpp
 // Physical parameters
@@ -360,19 +410,14 @@ String toString();            // Convert to string for debugging
 
 ## Configuration
 
-Customize hardware setup by modifying the RobotConfig:
+Customize hardware setup by modifying the TerraPenConfig:
 
 ```cpp
-RobotConfig config;
-config.wheel_diameter_mm = 30.0;        // Larger wheels
-config.wheelbase_mm = 40.0;             // Wider robot
-config.pen_up_angle = 120;              // Different servo angles
-config.pen_down_angle = 30;
-config.max_speed_mms = 25.0;            // Speed limits
-
-// Custom pin assignments
-config.left_motor_pins[0] = 10;         // Change pin assignments
-config.servo_pin = 11;
+// Access global configuration instance
+g_config.hardware.wheel_diameter_mm = 30.0;        // Larger wheels
+g_config.hardware.wheelbase_mm = 40.0;             // Wider robot
+g_config.hardware.pen_up_angle = 120;              // Different servo angles
+g_config.hardware.pen_down_angle = 30;
 ```
 
 ## Differential Drive Kinematics
@@ -441,10 +486,13 @@ This library provides a solid foundation for building drawing robots, plotters, 
 
 Complete documentation is available in the [`docs/`](docs/) folder:
 
-- **[System Architecture](docs/ARCHITECTURE.md)** - Complete system design and patterns
-- **[API Reference](docs/API_REFERENCE.md)** - Full API documentation  
-- **[Testing Guide](docs/TESTING_GUIDE.md)** - How to test and validate your code
-- **[Performance Strategy](docs/ADAPTIVE_PERFORMANCE_STRATEGY.md)** - Smart monitoring and optimization
-- **[Phase Status](docs/PHASE_2_READINESS_ASSESSMENT.md)** - Current implementation status and next steps
+- **[API Reference](docs/API_REFERENCE.md)** - Complete API documentation for all classes and methods
+- **[System Architecture](docs/ARCHITECTURE.md)** - System design, patterns, and component relationships
+- **[Testing Guide](docs/TESTING.md)** - How to run tests and validate your robot code
+- **[Performance Strategy](docs/ADAPTIVE_PERFORMANCE_STRATEGY.md)** - Real-time monitoring and optimization
+- **[Phase 2 Status](docs/PHASE_2_COMPLETE.md)** - Current implementation status and coordinate system features
+- **[Automation Setup](docs/AUTOMATION_SETUP.md)** - CI/CD integration and development workflow
+- **[EEPROM Strategy](docs/EEPROM_STRATEGY.md)** - Data storage and persistence
+- **[POST Optimization](docs/POST_OPTIMIZATION.md)** - Power-on self-test configuration
 
 See [`docs/README.md`](docs/README.md) for complete documentation index.

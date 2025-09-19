@@ -8,7 +8,6 @@
 #include <TerraPenMotionControl.h>
 
 TerraPenRobot robot;
-RobotConfig config;
 
 void setup() {
   Serial.begin(115200);

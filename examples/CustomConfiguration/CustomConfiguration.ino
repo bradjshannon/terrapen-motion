@@ -1,5 +1,12 @@
 /*
- * Custom Configuration Example
+ * Custom Configuravoid setup() {
+  Serial.begin(115200);
+  Serial.println("=== Custom Configuration Example ===");
+  Serial.println("Demonstrates custom robot hardware configuration");
+  Serial.println();
+  
+  // Modify global configuration
+  setupCustomConfiguration();e
  * 
  * Demonstrates how to create and use custom robot configurations for 
  * different hardware setups, wheel sizes, pin assignments, and servo positions.

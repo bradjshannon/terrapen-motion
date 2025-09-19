@@ -2,6 +2,7 @@
 #define PERFORMANCE_MONITOR_H
 
 #include <Arduino.h>
+#include <limits.h>
 
 /**
  * Performance Monitoring System

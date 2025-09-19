@@ -22,8 +22,7 @@ StepperDriver left_motor;
 StepperDriver right_motor;
 ServoDriver pen_servo;
 
-// Configuration
-RobotConfig config;
+// Configuration - Access via g_config.hardware
 
 // Position tracking
 Position robot_position(0, 0, 0);

@@ -25,7 +25,7 @@ StepperDriver right_motor;
 ServoDriver pen_servo;
 
 // Use configuration for consistent setup
-RobotConfig config;
+// Access global config with g_config.hardware
 
 // Test state
 enum TestPhase {

@@ -12,12 +12,10 @@
  * providing a solid foundation for Phase 2 coordinate system implementation.
  */
 
-#include "src/robot/TerraPenRobot.h"
-#include "src/RobotConfig.h"
+#include <TerraPenMotionControl.h>
 
 // Global robot instance
 TerraPenRobot robot;
-RobotConfig config;
 
 // Test state tracking
 enum TestPhase {

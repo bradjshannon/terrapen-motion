@@ -141,7 +141,7 @@ void ServoDriver::detach() {
 }
 
 bool ServoDriver::isAttached() const {
-    return initialized && servo.attached();
+    return initialized && const_cast<Servo&>(servo).attached();
 }
 
 // === PRIVATE METHODS ===

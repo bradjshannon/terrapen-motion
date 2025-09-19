@@ -82,11 +82,11 @@ bool NVRAMManager::storePerformanceData(const PerformanceMetrics& metrics) {
     
     // Convert metrics to record format
     record.timestamp = millis();
-    record.cpu_usage_percent = metrics.cpu_usage_percent * 100;  // 0.01% resolution
+    record.cpu_usage_percent = metrics.cpu_utilization_percent * 100;  // 0.01% resolution
     record.free_memory_bytes = metrics.free_memory_bytes;
-    record.loop_time_us = metrics.avg_loop_time_us;
-    record.step_rate_sps = metrics.current_step_rate;
-    record.error_count = metrics.error_count_since_last;
+    record.loop_time_us = metrics.loop_time_avg_us;
+    record.step_rate_sps = metrics.motor_load_percent;  // Use motor load as proxy for step rate
+    record.error_count = metrics.timing_violations;
     record.flags = UPLOAD_FLAG_VALID;  // Mark as valid, not uploaded yet
     record.checksum = calculateChecksum(record);
     
@@ -234,7 +234,7 @@ void NVRAMManager::confirmUploaded(uint32_t timestamp) {
         EEPROM.get(pos, record);
         
         if (validateRecord(record) && record.timestamp == timestamp) {
-            record.upload_status = UPLOAD_CONFIRMED;
+            record.flags |= UPLOAD_FLAG_CONFIRMED;
             EEPROM.put(pos, record);
             break;
         }
@@ -255,7 +255,7 @@ void NVRAMManager::cleanupUploadedRecords() {
         PerformanceRecord record;
         EEPROM.get(header.oldest_record_pos, record);
         
-        if (!validateRecord(record) || record.upload_status != UPLOAD_CONFIRMED) {
+        if (!validateRecord(record) || !(record.flags & UPLOAD_FLAG_CONFIRMED)) {
             break;  // Found unconfirmed record, stop cleanup
         }
         
@@ -305,7 +305,7 @@ void NVRAMManager::getStorageStats(uint16_t& used, uint16_t& available, uint16_t
         
         if (validateRecord(record)) {
             used++;
-            if (record.upload_status != UPLOAD_CONFIRMED) {
+            if (!(record.flags & UPLOAD_FLAG_CONFIRMED)) {
                 pending_upload++;
             }
         }
