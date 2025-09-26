@@ -1,0 +1,200 @@
+{
+    "version": "0.2.0",
+    "testFramework": "terrapen",
+    "testSuites": [
+        {
+            "id": "mathematical_validation",
+            "label": "Mathematical Validation Tests",
+            "description": "Core coordinate and mathematical algorithm tests (no hardware required)",
+            "type": "arduino",
+            "environment": "test-math",
+            "executable": "src/MathValidationMain.cpp",
+            "tests": [
+                {
+                    "id": "distance_calculation",
+                    "label": "Distance Calculation (3,4,5 triangle)",
+                    "description": "Validates Pythagorean theorem implementation",
+                    "file": "src/Position.h",
+                    "line": 95,
+                    "function": "distanceTo"
+                },
+                {
+                    "id": "zero_distance",
+                    "label": "Zero Distance to Self",
+                    "description": "Ensures distance to same position is zero",
+                    "file": "src/Position.h", 
+                    "line": 95,
+                    "function": "distanceTo"
+                },
+                {
+                    "id": "north_angle",
+                    "label": "North Direction Angle (90°)",
+                    "description": "Validates cardinal direction angle calculations",
+                    "file": "src/Position.h",
+                    "line": 108,
+                    "function": "angleTo"
+                },
+                {
+                    "id": "east_angle", 
+                    "label": "East Direction Angle (0°)",
+                    "description": "Validates east direction angle calculation",
+                    "file": "src/Position.h",
+                    "line": 108,
+                    "function": "angleTo"
+                },
+                {
+                    "id": "position_creation_x",
+                    "label": "Position Creation X Component",
+                    "description": "Validates Position constructor X coordinate",
+                    "file": "src/Position.h",
+                    "line": 44,
+                    "function": "Position"
+                },
+                {
+                    "id": "position_creation_y",
+                    "label": "Position Creation Y Component", 
+                    "description": "Validates Position constructor Y coordinate",
+                    "file": "src/Position.h",
+                    "line": 44,
+                    "function": "Position"
+                },
+                {
+                    "id": "position_creation_angle",
+                    "label": "Position Creation Angle Component",
+                    "description": "Validates Position constructor angle parameter",
+                    "file": "src/Position.h",
+                    "line": 44,
+                    "function": "Position"
+                },
+                {
+                    "id": "position_equality",
+                    "label": "Position Equality Check",
+                    "description": "Validates position comparison logic",
+                    "file": "src/MathValidationMain.cpp",
+                    "line": 66,
+                    "function": "setup"
+                },
+                {
+                    "id": "interpolation_midpoint_x",
+                    "label": "Interpolation Midpoint X",
+                    "description": "Validates linear interpolation X component",
+                    "file": "src/Position.h",
+                    "line": 248,
+                    "function": "interpolate"
+                },
+                {
+                    "id": "interpolation_midpoint_y", 
+                    "label": "Interpolation Midpoint Y",
+                    "description": "Validates linear interpolation Y component",
+                    "file": "src/Position.h",
+                    "line": 248,
+                    "function": "interpolate"
+                },
+                {
+                    "id": "interpolation_quarter_x",
+                    "label": "Interpolation Quarter X",
+                    "description": "Validates fractional interpolation X component", 
+                    "file": "src/Position.h",
+                    "line": 248,
+                    "function": "interpolate"
+                },
+                {
+                    "id": "interpolation_quarter_y",
+                    "label": "Interpolation Quarter Y", 
+                    "description": "Validates fractional interpolation Y component",
+                    "file": "src/Position.h",
+                    "line": 248,
+                    "function": "interpolate"
+                },
+                {
+                    "id": "angle_normalize_3pi",
+                    "label": "Normalize Angle 3π to π",
+                    "description": "Validates angle normalization for positive multi-revolution angles",
+                    "file": "src/Position.h",
+                    "line": 220,
+                    "function": "normalizeAngle"
+                },
+                {
+                    "id": "angle_normalize_minus3pi",
+                    "label": "Normalize Angle -3π to -π", 
+                    "description": "Validates angle normalization for negative multi-revolution angles",
+                    "file": "src/Position.h",
+                    "line": 220,
+                    "function": "normalizeAngle"
+                },
+                {
+                    "id": "polar_creation_x",
+                    "label": "Polar Coordinate Creation X",
+                    "description": "Validates polar-to-Cartesian conversion X component",
+                    "file": "src/Position.h",
+                    "line": 232,
+                    "function": "fromPolar"
+                },
+                {
+                    "id": "polar_creation_y",
+                    "label": "Polar Coordinate Creation Y",
+                    "description": "Validates polar-to-Cartesian conversion Y component", 
+                    "file": "src/Position.h",
+                    "line": 232,
+                    "function": "fromPolar"
+                },
+                {
+                    "id": "east_movement_distance",
+                    "label": "East Movement Distance",
+                    "description": "Validates distance calculation for eastward movement",
+                    "file": "src/Position.h",
+                    "line": 95,
+                    "function": "distanceTo"
+                },
+                {
+                    "id": "east_movement_bearing",
+                    "label": "East Movement Bearing (0°)",
+                    "description": "Validates bearing calculation for eastward movement",
+                    "file": "src/Position.h", 
+                    "line": 108,
+                    "function": "angleTo"
+                },
+                {
+                    "id": "diagonal_movement_distance",
+                    "label": "Diagonal Movement Distance",
+                    "description": "Validates distance calculation for diagonal movement",
+                    "file": "src/Position.h",
+                    "line": 95,
+                    "function": "distanceTo"
+                },
+                {
+                    "id": "diagonal_movement_bearing",
+                    "label": "Diagonal Movement Bearing (45°)",
+                    "description": "Validates bearing calculation for diagonal movement",
+                    "file": "src/Position.h",
+                    "line": 108,
+                    "function": "angleTo"
+                },
+                {
+                    "id": "tiny_movement_precision",
+                    "label": "Tiny Movement Precision (0.1mm)",
+                    "description": "Validates sub-millimeter precision handling",
+                    "file": "src/Position.h",
+                    "line": 95,
+                    "function": "distanceTo"
+                },
+                {
+                    "id": "position_tolerance_within",
+                    "label": "Position Equality Within Tolerance",
+                    "description": "Validates position comparison with tolerance",
+                    "file": "src/MathValidationMain.cpp",
+                    "line": 138,
+                    "function": "setup"
+                },
+                {
+                    "id": "position_tolerance_outside",
+                    "label": "Position Inequality Outside Tolerance", 
+                    "description": "Validates position comparison outside tolerance",
+                    "file": "src/MathValidationMain.cpp",
+                    "line": 144,
+                    "function": "setup"
+                }
+            ]
+        }
+    ]
+}

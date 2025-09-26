@@ -1,28 +1,30 @@
 /**
- * TerraPen Test Runner
+ * Test Runner Example
  * 
- * Comprehensive testing example that demonstrates:
- * - Unit testing framework
- * - Error handling system
- * - Power-On Self Test (POST)
- * - Performance monitoring
- * 
- * This example serves as both a validation tool and a reference
- * implementation for the testing framework.
+ * Arduino sketch that demonstrates how to use the TerraPen testing framework.
+ * This example shows different ways to run tests and can be used as a template.
+ *
+ * Features:
+ * - Complete test suite execution
+ * - Interactive serial command interface  
+ * - Multiple test execution modes
+ * - System configuration display
+ * - Real-time status monitoring
  */
 
 #include <TerraPenMotionControl.h>
 
 // Include testing framework
-#include "src/testing/TestFramework.h"
-#include "src/testing/PowerOnSelfTest.h"
+#include "test/framework/TestFramework.h"
+#include "test/framework/PowerOnSelfTest.h"
 #include "src/ErrorSystem.h"
 #include "src/PerformanceMonitor.h"
 
 // Include all test files
-#include "test/test_stepper_driver.cpp"
-#include "test/test_servo_driver.cpp"
-#include "test/test_terrapen_robot.cpp"
+#include "test/hardware/test_stepper_driver.cpp"
+#include "test/hardware/test_servo_driver.cpp"
+#include "test/unit/test_terrapen_robot.cpp"
+#include "test/integration/test_phase2_coordinate_system.cpp"
 
 // Test configuration
 bool run_post_on_startup = true;

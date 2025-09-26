@@ -2,7 +2,17 @@
     // See http://go.microsoft.com/fwlink/?LinkId=827846
     // for the documentation about the extensions.json format
     "recommendations": [
-        "platformio.platformio-ide"
+        "formulahendry.auto-close-tag",
+        "formulahendry.auto-rename-tag",
+        "hbenl.vscode-test-explorer",
+        "ms-python.debugpy",
+        "ms-python.python",
+        "ms-vscode.cpptools",
+        "ms-vscode.powershell",
+        "ms-vscode.test-adapter-converter",
+        "ms-vscode.vscode-serial-monitor",
+        "platformio.platformio-ide",
+        "redhat.vscode-yaml"
     ],
     "unwantedRecommendations": [
         "ms-vscode.cpptools-extension-pack"

@@ -2,13 +2,84 @@
 .pio/
 .pioenvs/
 .piolibdeps/
+.piohome/
 
-# VS Code settings (keep some, ignore others)
+# Python virtual environment
+.venv/
+venv/
+env/
+__venv/
+
+# VS Code settings (keep workspace settings, ignore user settings)
 .vscode/.browse.c_cpp.db*
 .vscode/c_cpp_properties.json
-.vscode/launch.json
 .vscode/ipch/
-.vscode/settings.json
+.vscode/settings.json.user
+
+# Arduino IDE build artifacts
+*.hex
+*.elf
+*.bin
+*.map
+
+# OS specific files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Build outputs
+build/
+dist/
+bin/
+obj/
+
+# Editor backup files
+*.bak
+*.backup
+*.orig
+
+# Python cache (for robot_simulator and testing scripts)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pytest_cache/
+
+# Test results and coverage
+.coverage
+htmlcov/
+.pytest_cache/
+test-results/
+*.lcov
+
+# Local configuration files (if any)
+local_config.h
+secrets.h
+config.local.*
+
+# IDE files
+.idea/
+*.sublime-*
+*.code-workspace
+
+# Documentation build artifacts
+docs/_build/
+docs/build/
+site/
+
+# Node modules (if any web-based tools are added)
+node_modules/
+
+# Dependency directories
+lib/
+libs/
 
 # Arduino IDE build artifacts
 *.hex

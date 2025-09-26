@@ -1,0 +1,32 @@
+# Python requirements for TerraPen Motion Control Library
+# Testing and Development Dependencies
+
+# Core testing framework support
+pytest>=7.0.0
+pytest-html>=3.1.0
+pytest-cov>=4.0.0
+
+# PlatformIO integration
+platformio>=6.0.0
+
+# GUI and visualization for robot simulator
+tkinter-page>=0.1.0
+matplotlib>=3.5.0
+numpy>=1.21.0
+configparser>=5.2.0
+
+# VSCode testing integration
+jsonschema>=4.0.0
+pyyaml>=6.0.0
+
+# Development utilities
+black>=22.0.0
+flake8>=5.0.0
+mypy>=0.991
+
+# Documentation
+sphinx>=5.0.0
+sphinx-rtd-theme>=1.0.0
+
+# Arduino/embedded development support
+pyserial>=3.5

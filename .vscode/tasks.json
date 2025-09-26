@@ -1,0 +1,42 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "PlatformIO: Build",
+            "type": "PlatformIO",
+            "task": "Build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$platformio"]
+        },
+        {
+            "label": "PlatformIO: Upload",
+            "type": "PlatformIO", 
+            "task": "Upload",
+            "group": "build",
+            "problemMatcher": ["$platformio"]
+        },
+        {
+            "label": "Run Math Tests",
+            "type": "shell",
+            "command": "pio",
+            "args": ["run", "-e", "test-math"],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": ["$platformio"],
+            "detail": "Run mathematical validation tests - No Arduino hardware required"
+        }
+    ]
+}
