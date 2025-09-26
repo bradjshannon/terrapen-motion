@@ -1,7 +1,10 @@
-# PlatformIO build directories
+# ====================
+# PLATFORMIO & BUILD
+# ====================
 .pio/
 .pioenvs/
 .piolibdeps/
+.piopackages/
 .piohome/
 
 # Python virtual environment
@@ -10,7 +13,52 @@ venv/
 env/
 __venv/
 
-# VS Code settings (keep workspace settings, ignore user settings)
+# ====================
+# ARDUINO IDE
+# ====================
+# Build artifacts
+*.hex
+*.elf
+*.bin
+*.eep
+*.lss
+*.map
+*.sym
+*.o
+*.a
+*.d
+*.lst
+
+# Arduino IDE temporary files
+*.tmp
+*.bak
+*~
+
+# Arduino IDE build cache
+build/
+
+# ====================
+# ESP32 SPECIFIC
+# ====================
+# ESP-IDF build outputs
+build/
+sdkconfig
+sdkconfig.old
+*.bin
+*.map
+*.elf
+
+# Partition tables (keep template, ignore generated)
+partitions.bin
+
+# SPIFFS images
+spiffs.bin
+
+# ====================
+# VS CODE
+# ====================
+# Keep extensions.json for reproducible environment
+# Ignore user-specific settings and cache
 .vscode/.browse.c_cpp.db*
 .vscode/c_cpp_properties.json
 .vscode/ipch/
@@ -80,38 +128,185 @@ node_modules/
 # Dependency directories
 lib/
 libs/
+.vscode/.cortex-debug*
 
-# Arduino IDE build artifacts
-*.hex
-*.elf
-*.bin
-
-# OS specific files
-.DS_Store
-Thumbs.db
-*.swp
-*.swo
-*~
-
-# Temporary files
-*.tmp
-*.temp
-*.log
-
-# Build outputs
-build/
-dist/
-
-# Editor backup files
-*.bak
-*.backup
-
-# Python cache (for robot_simulator)
+# ====================
+# PYTHON (robot_simulator)
+# ====================
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
 *.pyo
 *.pyd
+.Python
 
-# Local configuration files (if any)
-local_config.h
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Python distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# ====================
+# SECRETS & CONFIG
+# ====================
+# Never commit sensitive information
 secrets.h
+local_config.h
+wifi_credentials.h
+api_keys.h
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Local configuration overrides
+config_local.ini
+robot_config_local.ini
+
+# ====================
+# TESTING & DEBUG
+# ====================
+# Test outputs
+test_results/
+coverage/
+*.gcov
+*.gcda
+*.gcno
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Valgrind
+vgcore.*
+*.vglog
+
+# ====================
+# DOCUMENTATION
+# ====================
+# Generated documentation (keep source docs)
+docs/_build/
+docs/html/
+docs/latex/
+doxygen_html/
+doxygen_xml/
+
+# ====================
+# OS SPECIFIC
+# ====================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Linux
+*~
+.nfs*
+
+# ====================
+# EDITORS & IDEs
+# ====================
+# Vim
+*.swp
+*.swo
+*.swn
+.netrwhist
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Sublime Text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
+
+# CLion
+.idea/
+cmake-build-*/
+
+# Eclipse
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# ====================
+# TEMPORARY & LOGS
+# ====================
+*.log
+*.temp
+*.cache
+logs/
+temp/
+
+# ====================
+# FIRMWARE STORAGE
+# ====================
+# ESP32 stored Arduino firmware (for wireless programming)
+firmware_storage/
+*.hex.backup
+stored_firmware/
