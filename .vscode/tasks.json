@@ -37,6 +37,166 @@
             },
             "problemMatcher": ["$platformio"],
             "detail": "Run mathematical validation tests - No Arduino hardware required"
+        },
+        {
+            "label": "Build ESP32",
+            "type": "shell",
+            "command": "pio",
+            "args": ["run", "-e", "esp32-s3-zero"],
+            "options": {
+                "cwd": "${workspaceFolder}/esp32-controller"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": ["$platformio"],
+            "detail": "Build ESP32 controller firmware"
+        },
+        {
+            "label": "Upload ESP32",
+            "type": "shell", 
+            "command": "pio",
+            "args": ["run", "-e", "esp32-s3-zero", "-t", "upload"],
+            "options": {
+                "cwd": "${workspaceFolder}/esp32-controller"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            },
+            "problemMatcher": ["$platformio"],
+            "detail": "Upload ESP32 firmware via USB"
+        },
+        {
+            "label": "Upload ESP32 (OTA)",
+            "type": "shell",
+            "command": "pio", 
+            "args": ["run", "-e", "esp32-s3-zero", "-t", "upload", "--upload-port", "terrapen-esp32.local"],
+            "options": {
+                "cwd": "${workspaceFolder}/esp32-controller"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always", 
+                "focus": true,
+                "panel": "shared"
+            },
+            "problemMatcher": ["$platformio"],
+            "detail": "Upload ESP32 firmware over-the-air"
+        },
+        {
+            "label": "Build Arduino",
+            "type": "shell",
+            "command": "pio",
+            "args": ["run", "-e", "nano"],
+            "options": {
+                "cwd": "${workspaceFolder}/nano-firmware"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": ["$platformio"],
+            "detail": "Build Arduino Nano firmware"
+        },
+        {
+            "label": "Upload Arduino (via ESP32)",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-ExecutionPolicy", "Bypass",
+                "-File", "${workspaceFolder}/esp32-controller/scripts/upload_via_esp32.ps1",
+                "${workspaceFolder}/nano-firmware/.pio/build/nano/firmware.hex"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            },
+            "dependsOn": "Build Arduino", 
+            "detail": "Upload Arduino firmware via ESP32 bridge (PowerShell)"
+        },
+        {
+            "label": "Upload Arduino (via ESP32 - Python)",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "${workspaceFolder}/esp32-controller/scripts/upload_via_esp32.py",
+                "${workspaceFolder}/nano-firmware/.pio/build/nano/firmware.hex"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            },
+            "dependsOn": "Build Arduino",
+            "detail": "Upload Arduino firmware via ESP32 bridge (Python fallback)"
+        },
+        {
+            "label": "Build & Upload Both",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Upload ESP32 (OTA)",
+                "Upload Arduino (via ESP32)"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            },
+            "detail": "Build and upload both ESP32 and Arduino firmware"
+        },
+        {
+            "label": "Build All",
+            "dependsOrder": "parallel",
+            "dependsOn": [
+                "Build ESP32",
+                "Build Arduino"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            },
+            "detail": "Build both ESP32 and Arduino firmware in parallel"
+        },
+        {
+            "label": "Flash Development Setup",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Upload ESP32",
+                "Upload Arduino (via ESP32)"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            },
+            "detail": "Complete development setup - ESP32 via USB, Arduino via ESP32"
         }
     ]
 }

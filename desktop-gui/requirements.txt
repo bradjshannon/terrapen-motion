@@ -1,0 +1,5 @@
+requests>=2.25.0
+tkinter  # Usually included with Python
+numpy>=1.20.0
+matplotlib>=3.3.0  # For future plotting features
+pillow>=8.0.0      # For image handling in GUI

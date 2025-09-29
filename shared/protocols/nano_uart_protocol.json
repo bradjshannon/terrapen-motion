@@ -1,0 +1,100 @@
+{
+  "version": "1.0.0",
+  "description": "TerraPen Motion System - Communication Protocol between ESP32 and Arduino Nano",
+  
+  "commands": {
+    "MOVE_TO": {
+      "id": 1,
+      "description": "Move to absolute coordinate",
+      "parameters": {
+        "x": "float - X coordinate in mm",
+        "y": "float - Y coordinate in mm", 
+        "pen_down": "bool - Whether pen should be down during move"
+      }
+    },
+    "DRAW_TO": {
+      "id": 2, 
+      "description": "Draw to absolute coordinate",
+      "parameters": {
+        "x": "float - X coordinate in mm",
+        "y": "float - Y coordinate in mm"
+      }
+    },
+    "SET_PEN": {
+      "id": 3,
+      "description": "Control pen position",
+      "parameters": {
+        "down": "bool - True for pen down, false for pen up"
+      }
+    },
+    "GET_POSITION": {
+      "id": 4,
+      "description": "Request current robot position",
+      "parameters": {}
+    },
+    "HOME": {
+      "id": 5,
+      "description": "Return to origin (0,0)",
+      "parameters": {}
+    },
+    "EMERGENCY_STOP": {
+      "id": 6,
+      "description": "Immediate stop all motion",
+      "parameters": {}
+    },
+    "GET_STATUS": {
+      "id": 7,
+      "description": "Request robot status",
+      "parameters": {}
+    },
+    "CALIBRATE": {
+      "id": 8,
+      "description": "Perform calibration routine", 
+      "parameters": {}
+    }
+  },
+
+  "responses": {
+    "ACK": {
+      "id": 128,
+      "description": "Command acknowledged"
+    },
+    "NACK": {
+      "id": 129, 
+      "description": "Command rejected",
+      "parameters": {
+        "error_code": "uint8 - Error code",
+        "error_message": "string - Human readable error"
+      }
+    },
+    "POSITION": {
+      "id": 130,
+      "description": "Current robot position",
+      "parameters": {
+        "x": "float - X coordinate in mm",
+        "y": "float - Y coordinate in mm",
+        "angle": "float - Heading in radians"
+      }
+    },
+    "STATUS": {
+      "id": 131,
+      "description": "Robot status report",
+      "parameters": {
+        "state": "uint8 - Robot state (0=IDLE, 1=MOVING, 2=ERROR, 3=EMERGENCY_STOP)",
+        "pen_down": "bool - Pen position",
+        "battery_voltage": "float - Battery voltage if available"
+      }
+    }
+  },
+
+  "message_format": {
+    "description": "Binary message format over UART",
+    "structure": [
+      "uint8 - Start byte (0xFF)",
+      "uint8 - Command/Response ID", 
+      "uint8 - Payload length",
+      "bytes - Payload data",
+      "uint8 - Checksum (XOR of all bytes)"
+    ]
+  }
+}

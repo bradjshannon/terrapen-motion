@@ -7,11 +7,14 @@
         "*test*.json": "json"
     },
     "C_Cpp.default.includePath": [
-        "${workspaceFolder}/src/**",
-        "${workspaceFolder}/test/framework/**",
-        "${workspaceFolder}/.pio/libdeps/**",
-        "${workspaceFolder}/.pio/build/**/FrameworkArduino/**",
-        "${workspaceFolder}/.pio/build/**/FrameworkArduinoVariant/**"
+        "${workspaceFolder}/nano-firmware/src/**",
+        "${workspaceFolder}/nano-firmware/test/framework/**", 
+        "${workspaceFolder}/nano-firmware/.pio/libdeps/**",
+        "${workspaceFolder}/nano-firmware/.pio/build/**/FrameworkArduino/**",
+        "${workspaceFolder}/nano-firmware/.pio/build/**/FrameworkArduinoVariant/**",
+        "${workspaceFolder}/esp32-controller/src/**",
+        "${workspaceFolder}/esp32-controller/.pio/libdeps/**",
+        "${workspaceFolder}/shared/**"
     ],
     "C_Cpp.default.defines": [
         "ARDUINO=10607",
@@ -19,7 +22,7 @@
         "F_CPU=16000000L",
         "UNIT_TEST"
     ],
-    "C_Cpp.default.compilerPath": "${workspaceFolder}/.pio/build/nano/idedata.json",
+    "C_Cpp.default.compilerPath": "${workspaceFolder}/nano-firmware/.pio/build/nano/idedata.json",
     "C_Cpp.default.cStandard": "c11",
     "C_Cpp.default.cppStandard": "c++11",
     "files.exclude": {
@@ -51,5 +54,28 @@
     "platformio-ide.serialMonitor.autoconnect": false,
     "platformio-ide.serialMonitor.baudRate": 9600,
     "platformio-ide.serialMonitor.reopenSerialMonitor": true,
-    "platformio-ide.activateProjectOnTextEditorChange": true
+    "platformio-ide.activateProjectOnTextEditorChange": true,
+    "platformio-ide.projectDirs": [
+        "nano-firmware",
+        "esp32-controller"
+    ],
+    
+    // === DUAL-DEVICE WORKFLOW SETTINGS ===
+    "taskExplorer.enableTaskButtons": true,
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    
+    // File watcher for automatic rebuilds
+    "files.watcherExclude": {
+        "**/.pio/**": true,
+        "**/node_modules/**": true,
+        "**/.venv/**": true
+    },
+    
+    // Quick access recommendations
+    "workbench.startupEditor": "none",
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+        "*.cpp": "${capture}.h",
+        "platformio.ini": ".pio"
+    }
 }
